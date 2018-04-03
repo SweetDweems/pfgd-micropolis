@@ -622,6 +622,17 @@ public class MainWindow extends JFrame
 			}
 			}));
 		disastersMenu.add(menuItem);
+		
+		menuItem = new JMenuItem(strings.getString("menu.disasters.NUCLEARSPILL"));
+		setupKeys(menuItem, "menu.disasters.NUCLEARSPILL");
+		menuItem.addActionListener(wrapActionListener(
+			new ActionListener() {
+			public void actionPerformed(ActionEvent ev)
+			{
+				onInvokeDisasterClicked(Disaster.NUCLEARSPILL);
+			}
+			}));
+		disastersMenu.add(menuItem);
 
 		menuItem = new JMenuItem(strings.getString("menu.disasters.MELTDOWN"));
 		setupKeys(menuItem, "menu.disasters.MELTDOWN");
@@ -1533,6 +1544,11 @@ public class MainWindow extends JFrame
 			break;
 		case MELTDOWN:
 			if (!getEngine().makeMeltdown()) {
+				messagesPane.appendCityMessage(MicropolisMessage.NO_NUCLEAR_PLANTS);
+			}
+			break;
+		case NUCLEARSPILL:
+			if (!getEngine().makeNuclearSpill()) {
 				messagesPane.appendCityMessage(MicropolisMessage.NO_NUCLEAR_PLANTS);
 			}
 			break;

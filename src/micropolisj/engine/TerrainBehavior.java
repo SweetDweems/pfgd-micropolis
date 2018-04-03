@@ -24,6 +24,7 @@ class TerrainBehavior extends TileBehavior
 	{
 		FIRE,
 		FLOOD,
+		TOXIC,
 		RADIOACTIVE,
 		ROAD,
 		RAIL,
@@ -39,6 +40,9 @@ class TerrainBehavior extends TileBehavior
 			return;
 		case FLOOD:
 			doFlood();
+			return;
+		case TOXIC:
+			doNuclearSpill();
 			return;
 		case RADIOACTIVE:
 			doRadioactiveTile();
@@ -126,6 +130,40 @@ class TerrainBehavior extends TileBehavior
 								city.killZone(xx, yy, t);
 							}
 							city.setTile(xx, yy, (char)(FLOOD + PRNG.nextInt(3)));
+						}
+					}
+				}
+			}
+		}
+		else {
+			if (PRNG.nextInt(16) == 0) {
+				city.setTile(xpos, ypos, DIRT);
+			}
+		}
+	}
+	
+	void doNuclearSpill()
+	{
+		final int [] DX = { 0, 1, 0, -1 };
+		final int [] DY = { -1, 0, 1, 0 };
+
+		if (city.toxicCnt != 0)
+		{
+			for (int z = 0; z < 4; z++)
+			{
+				if (PRNG.nextInt(8) == 0) {
+					int xx = xpos + DX[z];
+					int yy = ypos + DY[z];
+					if (city.testBounds(xx, yy)) {
+						int t = city.getTile(xx, yy);
+						if (isCombustible(t)
+							|| t == DIRT
+							|| (t >= WOODS5 && t < TOXIC))
+						{
+							if (isZoneAny(t)) {
+								city.killZone(xx, yy, t);
+							}
+							city.setTile(xx, yy, (char)(TOXIC + PRNG.nextInt(3)));
 						}
 					}
 				}

@@ -145,7 +145,7 @@ public class Micropolis
 	public int centerMassX;
 	public int centerMassY;
 	CityLocation meltdownLocation;  //may be null
-	CityLocation spillLocation;
+	CityLocation toxicLocation;
 	CityLocation crashLocation;     //may be null
 
 	int needHospital; // -1 too many already, 0 just right, 1 not enough
@@ -186,6 +186,10 @@ public class Micropolis
 	int floodCnt; //number of turns the flood will last
 	int floodX;
 	int floodY;
+	
+	int toxicCnt;
+	int toxicX;
+	int toxicY;
 
 	public int cityTime;  //counts "weeks" (actually, 1/48'ths years)
 	int scycle; //same as cityTime, except mod 1024
@@ -887,6 +891,10 @@ public class Micropolis
 		if (floodCnt > 0) {
 			floodCnt--;
 		}
+		if(toxicCnt > 0)
+		{
+			toxicCnt--;
+		}
 
 		final int [] DisChance = { 480, 240, 60 };
 		if (noDisasters)
@@ -1452,6 +1460,7 @@ public class Micropolis
 
 		bb.put("FIRE", new TerrainBehavior(this, TerrainBehavior.B.FIRE));
 		bb.put("FLOOD", new TerrainBehavior(this, TerrainBehavior.B.FLOOD));
+		bb.put("TOXIC", new TerrainBehavior(this, TerrainBehavior.B.TOXIC));
 		bb.put("RADIOACTIVE", new TerrainBehavior(this, TerrainBehavior.B.RADIOACTIVE));
 		bb.put("ROAD", new TerrainBehavior(this, TerrainBehavior.B.ROAD));
 		bb.put("RAIL", new TerrainBehavior(this, TerrainBehavior.B.RAIL));
@@ -1900,29 +1909,6 @@ public class Micropolis
 		clearMes();
 		sendMessageAt(MicropolisMessage.MELTDOWN_REPORT, xpos, ypos);
 	}
-	
-	void doNuclearSpill(int xpos, int ypos)
-	{
-		spillLocation = new CityLocation(xpos, ypos);
-
-		for (int z = 0; z < 200; z++) {
-			int x = xpos - 20 + PRNG.nextInt(41);
-			int y = ypos - 15 + PRNG.nextInt(31);
-			if (!testBounds(x,y))
-				continue;
-
-			int t = map[y][x];
-			if (isZoneCenter(t)) {
-				continue;
-			}
-			if (isCombustible(t) || t == DIRT) {
-				setTile(x, y, RADTILE);
-			}
-		}
-
-		clearMes();
-		sendMessageAt(MicropolisMessage.MELTDOWN_REPORT, xpos, ypos);
-	}
 
 	static final int [] MltdwnTab = { 30000, 20000, 10000 };
 
@@ -2343,6 +2329,9 @@ public class Micropolis
 	public boolean makeNuclearSpill()
 	{
 		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
+		final int [] DX = { 0, 1, 0, -1 };
+		final int [] DY = { -1, 0, 1, 0 };
+		
 		for (int y = 0; y < map.length; y++) {
 			for (int x = 0; x < map[y].length; x++) {
 				if (getTile(x, y) == NUCLEAR) {
@@ -2358,8 +2347,32 @@ public class Micropolis
 
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
-		doNuclearSpill(p.x, p.y);
+		startNuclearSpill(p.x, p.y);
 		return true;
+	}
+	
+	void startNuclearSpill(int xpos, int ypos)
+	{
+		
+		toxicLocation = new CityLocation(xpos, ypos);
+		final int [] DX = { 0, 1, 0, -1 };
+		final int [] DY = { -1, 0, 1, 0 };
+		
+		for (int t = 0; t < 4; t++) {
+			int xx = xpos + DX[t];
+			int yy = ypos + DY[t];
+			if (testBounds(xx,yy)) {
+				int c = map[yy][xx];
+				if (isFloodable(c) && getTile(xx, yy) != NUCLEAR) {
+					setTile(xx, yy, TOXIC);
+					toxicCnt = 60;
+					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
+					toxicX = xx;
+					toxicY = yy;
+					return;
+				}
+			}
+		}
 	}
 
 	public void makeMonster()

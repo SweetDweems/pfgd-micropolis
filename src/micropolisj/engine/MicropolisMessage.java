@@ -57,6 +57,7 @@ public enum MicropolisMessage
 	HEAVY_TRAFFIC_REPORT,  //  41           HelicopterSprite
 	FLOOD_REPORT,
 	MELTDOWN_REPORT,        // 43            doMeltdown
+	NUCLEAR_SPILL_REPORT,
 	RIOTING_REPORT,
 
 	// added by Jason

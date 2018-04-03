@@ -17,6 +17,7 @@ public enum Disaster
 	FIRE,
 	FLOOD,
 	MELTDOWN,
+	NUCLEARSPILL,
 	TORNADO,
 	EARTHQUAKE;
 }
