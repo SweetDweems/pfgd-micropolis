@@ -145,6 +145,7 @@ public class Micropolis
 	public int centerMassX;
 	public int centerMassY;
 	CityLocation meltdownLocation;  //may be null
+	CityLocation spillLocation;
 	CityLocation crashLocation;     //may be null
 
 	int needHospital; // -1 too many already, 0 just right, 1 not enough
@@ -1899,6 +1900,29 @@ public class Micropolis
 		clearMes();
 		sendMessageAt(MicropolisMessage.MELTDOWN_REPORT, xpos, ypos);
 	}
+	
+	void doNuclearSpill(int xpos, int ypos)
+	{
+		spillLocation = new CityLocation(xpos, ypos);
+
+		for (int z = 0; z < 200; z++) {
+			int x = xpos - 20 + PRNG.nextInt(41);
+			int y = ypos - 15 + PRNG.nextInt(31);
+			if (!testBounds(x,y))
+				continue;
+
+			int t = map[y][x];
+			if (isZoneCenter(t)) {
+				continue;
+			}
+			if (isCombustible(t) || t == DIRT) {
+				setTile(x, y, RADTILE);
+			}
+		}
+
+		clearMes();
+		sendMessageAt(MicropolisMessage.MELTDOWN_REPORT, xpos, ypos);
+	}
 
 	static final int [] MltdwnTab = { 30000, 20000, 10000 };
 
@@ -2313,6 +2337,28 @@ public class Micropolis
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
 		doMeltdown(p.x, p.y);
+		return true;
+	}
+	
+	public boolean makeNuclearSpill()
+	{
+		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
+		for (int y = 0; y < map.length; y++) {
+			for (int x = 0; x < map[y].length; x++) {
+				if (getTile(x, y) == NUCLEAR) {
+					candidates.add(new CityLocation(x,y));
+				}
+			}
+		}
+
+		if (candidates.isEmpty()) {
+			// tell caller that no nuclear plants were found
+			return false;
+		}
+
+		int i = PRNG.nextInt(candidates.size());
+		CityLocation p = candidates.get(i);
+		doNuclearSpill(p.x, p.y);
 		return true;
 	}
 
