@@ -2324,6 +2324,9 @@ public class Micropolis
 
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
+		//Doesn't trigger spills atm
+		if(PRNG.nextInt(48) == 0)
+			startNuclearSpill(p.x,p.y);
 		doMeltdown(p.x, p.y);
 		return true;
 	}
@@ -2345,34 +2348,38 @@ public class Micropolis
 		}
 		
 		int i = PRNG.nextInt(candidates.size());
-		CityLocation p = candidates.get(i);
-		//setTile(p.x+1, p.y+1, FLOOD);
-		//startNuclearSpill(p.x, p.y);
+		CityLocation p1 = candidates.get(i);
+		i = PRNG.nextInt(candidates.size());
+		CityLocation p2 = candidates.get(i);
+		i = PRNG.nextInt(candidates.size());
+		CityLocation p3 = candidates.get(i);
+		i = PRNG.nextInt(candidates.size());
+		CityLocation p4 = candidates.get(i);
 		
-		final int [] DX = { 0, 1, 0, -1 };
-		final int [] DY = { -1, 0, 1, 0 };
-		
-		for (int t = 0; t < 4; t++) {
-			int xx = p.x + DX[t];
-			int yy = p.y + DY[t];
-			if (testBounds(xx,yy)) {
-				int c = map[yy][xx];
-				if (isFloodable(c)) {
-					setTile(xx, yy, TOXIC);
-					toxicCnt = 60;
-					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
-					toxicX = xx;
-					toxicY = yy;
-				}
+		for (int z = 0; z < 100; z++) {
+			int x = p1.x - 20 + PRNG.nextInt(31);
+			int y = p1.y - 15 + PRNG.nextInt(21);
+			if (!testBounds(x,y))
+				continue;
+
+			int t = map[y][x];
+			if (isZoneCenter(t)) {
+				continue;
+			}
+			if (isCombustible(t) || t == DIRT) {
+				setTile(x, y, RADTILE);
 			}
 		}
+		
+		startNuclearSpill(p1.x, p1.y);
+		startNuclearSpill(p2.x, p2.y);
+		startNuclearSpill(p3.x, p3.y);
+		startNuclearSpill(p4.x, p4.y);
 		return true;
 	}
-	/*
-	void startNuclearSpill(int xpos, int ypos)
+	
+	public void startNuclearSpill(int xpos, int ypos)
 	{
-		
-		toxicLocation = new CityLocation(xpos, ypos);
 		final int [] DX = { 0, 1, 0, -1 };
 		final int [] DY = { -1, 0, 1, 0 };
 		
@@ -2381,8 +2388,8 @@ public class Micropolis
 			int yy = ypos + DY[t];
 			if (testBounds(xx,yy)) {
 				int c = map[yy][xx];
-				if (isFloodable(c) && getTile(xx, yy) != NUCLEAR) {
-					setTile(xx, yy, FLOOD);
+				if (isFloodable(c)) {
+					setTile(xx, yy, TOXIC);
 					toxicCnt = 60;
 					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
 					toxicX = xx;
@@ -2392,7 +2399,7 @@ public class Micropolis
 			}
 		}
 	}
-	*/
+	
 	public void makeMonster()
 	{
 		MonsterSprite monster = (MonsterSprite) getSprite(SpriteKind.GOD);
