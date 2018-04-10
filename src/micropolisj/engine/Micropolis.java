@@ -910,6 +910,8 @@ public class Micropolis
 			setFire();
 			break;
 		case 2:
+			makeNuclearSpill();
+			break;
 		case 3:
 			makeFlood();
 			break;
@@ -2329,9 +2331,6 @@ public class Micropolis
 	public boolean makeNuclearSpill()
 	{
 		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
-		final int [] DX = { 0, 1, 0, -1 };
-		final int [] DY = { -1, 0, 1, 0 };
-		
 		for (int y = 0; y < map.length; y++) {
 			for (int x = 0; x < map[y].length; x++) {
 				if (getTile(x, y) == NUCLEAR) {
@@ -2347,10 +2346,29 @@ public class Micropolis
 
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
-		startNuclearSpill(p.x, p.y);
+		//setTile(p.x+1, p.y+1, FLOOD);
+		//startNuclearSpill(p.x, p.y);
+		
+		final int [] DX = { 0, 2, 0, -2 };
+		final int [] DY = { -2, 0, 2, 0 };
+		
+		for (int t = 0; t < 4; t++) {
+			int xx = p.x + DX[t];
+			int yy = p.y + DY[t];
+			if (testBounds(xx,yy)) {
+				int c = map[yy][xx];
+				if (isFloodable(c) && getTile(xx, yy) != NUCLEAR) {
+					setTile(xx, yy, TOXIC);
+					toxicCnt = 60;
+					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
+					toxicX = xx;
+					toxicY = yy;
+				}
+			}
+		}
 		return true;
 	}
-	
+	/*
 	void startNuclearSpill(int xpos, int ypos)
 	{
 		
@@ -2364,7 +2382,7 @@ public class Micropolis
 			if (testBounds(xx,yy)) {
 				int c = map[yy][xx];
 				if (isFloodable(c) && getTile(xx, yy) != NUCLEAR) {
-					setTile(xx, yy, TOXIC);
+					setTile(xx, yy, FLOOD);
 					toxicCnt = 60;
 					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
 					toxicX = xx;
@@ -2374,7 +2392,7 @@ public class Micropolis
 			}
 		}
 	}
-
+	*/
 	public void makeMonster()
 	{
 		MonsterSprite monster = (MonsterSprite) getSprite(SpriteKind.GOD);
@@ -2468,7 +2486,7 @@ public class Micropolis
 	{
 		rateOGMem[ypos/8][xpos/8] -= 20;
 
-		assert isZoneCenter(zoneTile);
+		//assert isZoneCenter(zoneTile);
 		CityDimension dim = getZoneSizeFor(zoneTile);
 		assert dim != null;
 		assert dim.width >= 3;

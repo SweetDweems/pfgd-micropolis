@@ -158,7 +158,7 @@ class TerrainBehavior extends TileBehavior
 						int t = city.getTile(xx, yy);
 						if (isCombustible(t)
 							|| t == DIRT
-							|| (t >= WOODS5 && t < TOXIC))
+							|| (t >= WOODS5 && t < FLOOD))
 						{
 							if (isZoneAny(t)) {
 								city.killZone(xx, yy, t);
