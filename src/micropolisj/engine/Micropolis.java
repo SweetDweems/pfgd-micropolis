@@ -2333,7 +2333,7 @@ public class Micropolis
 		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
 		for (int y = 0; y < map.length; y++) {
 			for (int x = 0; x < map[y].length; x++) {
-				if (getTile(x, y) == NUCLEAR) {
+				if (isNuclearEdge(getTile(x, y))) {//getTile(x, y) >= NUCLEAR && getTile(x, y) <= LIGHTNINGBOLT) {
 					candidates.add(new CityLocation(x,y));
 				}
 			}
@@ -2343,21 +2343,21 @@ public class Micropolis
 			// tell caller that no nuclear plants were found
 			return false;
 		}
-
+		
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
 		//setTile(p.x+1, p.y+1, FLOOD);
 		//startNuclearSpill(p.x, p.y);
 		
-		final int [] DX = { 0, 2, 0, -2 };
-		final int [] DY = { -2, 0, 2, 0 };
+		final int [] DX = { 0, 1, 0, -1 };
+		final int [] DY = { -1, 0, 1, 0 };
 		
 		for (int t = 0; t < 4; t++) {
 			int xx = p.x + DX[t];
 			int yy = p.y + DY[t];
 			if (testBounds(xx,yy)) {
 				int c = map[yy][xx];
-				if (isFloodable(c) && getTile(xx, yy) != NUCLEAR) {
+				if (isFloodable(c)) {
 					setTile(xx, yy, TOXIC);
 					toxicCnt = 60;
 					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);

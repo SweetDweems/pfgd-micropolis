@@ -160,7 +160,7 @@ class TerrainBehavior extends TileBehavior
 							|| t == DIRT
 							|| (t >= WOODS5 && t < FLOOD))
 						{
-							if (isZoneAny(t)) {
+							if (isZoneCenter(t)) {
 								city.killZone(xx, yy, t);
 							}
 							city.setTile(xx, yy, (char)(TOXIC + PRNG.nextInt(3)));

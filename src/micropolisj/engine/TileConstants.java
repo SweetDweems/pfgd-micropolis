@@ -136,6 +136,7 @@ public class TileConstants
 	static final char STADIUM = 784;
 	static final char FULLSTADIUM = 800;
 	static final char NUCLEAR = 816;
+	static final char[] NUCLEAREDGE = {811, 812, 813, 814, 815, 818, 819, 822, 823, 824, 825, 826};
 	static final char LASTZONE = 826;
 	public static final char LIGHTNINGBOLT = 827;
 	static final char HBRDG0 = 828;   //draw bridge tiles (horz)
@@ -384,6 +385,18 @@ public class TileConstants
 		assert (tile & LOMASK) == tile;
 
 		return tile >= FIRSTRIVEDGE && tile <= LASTRIVEDGE;
+	}
+	
+	static boolean isNuclearEdge(int tile)
+	{
+		assert (tile & LOMASK) == tile;
+		
+		for(char c : NUCLEAREDGE)
+		{
+			if(c == tile)
+				return true;
+		}
+		return false;
 	}
 
 	public static boolean isDozeable(int tile)
