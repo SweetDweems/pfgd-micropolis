@@ -87,5 +87,6 @@ public enum MicropolisMessage
 	SHIPWRECK_REPORT.useNotificationPane = true;
 	COPTER_CRASH_REPORT.useNotificationPane = true;
 	PLANECRASH_REPORT.useNotificationPane = true;
+	//NUCLEAR_SPILL_REPORT.useNotificationPane = true;
 	}
 }

@@ -2324,7 +2324,6 @@ public class Micropolis
 
 		int i = PRNG.nextInt(candidates.size());
 		CityLocation p = candidates.get(i);
-		//Doesn't trigger spills atm
 		if(PRNG.nextInt(48) == 0)
 			startNuclearSpill(p.x,p.y);
 		doMeltdown(p.x, p.y);
@@ -2336,7 +2335,7 @@ public class Micropolis
 		ArrayList<CityLocation> candidates = new ArrayList<CityLocation>();
 		for (int y = 0; y < map.length; y++) {
 			for (int x = 0; x < map[y].length; x++) {
-				if (isNuclearEdge(getTile(x, y))) {//getTile(x, y) >= NUCLEAR && getTile(x, y) <= LIGHTNINGBOLT) {
+				if (isNuclearEdge(getTile(x, y))) {
 					candidates.add(new CityLocation(x,y));
 				}
 			}
@@ -2355,22 +2354,7 @@ public class Micropolis
 		CityLocation p3 = candidates.get(i);
 		i = PRNG.nextInt(candidates.size());
 		CityLocation p4 = candidates.get(i);
-		
-		for (int z = 0; z < 100; z++) {
-			int x = p1.x - 20 + PRNG.nextInt(31);
-			int y = p1.y - 15 + PRNG.nextInt(21);
-			if (!testBounds(x,y))
-				continue;
 
-			int t = map[y][x];
-			if (isZoneCenter(t)) {
-				continue;
-			}
-			if (isCombustible(t) || t == DIRT) {
-				setTile(x, y, RADTILE);
-			}
-		}
-		
 		startNuclearSpill(p1.x, p1.y);
 		startNuclearSpill(p2.x, p2.y);
 		startNuclearSpill(p3.x, p3.y);
@@ -2388,9 +2372,9 @@ public class Micropolis
 			int yy = ypos + DY[t];
 			if (testBounds(xx,yy)) {
 				int c = map[yy][xx];
-				if (isFloodable(c)) {
+				if (isFloodable(c) || getTile(xx, yy) == FIRE) {
 					setTile(xx, yy, TOXIC);
-					toxicCnt = 60;
+					toxicCnt = 45;
 					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
 					toxicX = xx;
 					toxicY = yy;
@@ -2493,7 +2477,7 @@ public class Micropolis
 	{
 		rateOGMem[ypos/8][xpos/8] -= 20;
 
-		//assert isZoneCenter(zoneTile);
+		assert isZoneCenter(zoneTile);
 		CityDimension dim = getZoneSizeFor(zoneTile);
 		assert dim != null;
 		assert dim.width >= 3;

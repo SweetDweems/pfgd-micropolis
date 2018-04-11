@@ -158,7 +158,8 @@ class TerrainBehavior extends TileBehavior
 						int t = city.getTile(xx, yy);
 						if (isCombustible(t)
 							|| t == DIRT
-							|| (t >= WOODS5 && t < FLOOD))
+							|| (t >= WOODS5 && t < FLOOD)
+							|| getTileBehavior(t).equals("FIRE"))
 						{
 							if (isZoneCenter(t)) {
 								city.killZone(xx, yy, t);
@@ -171,7 +172,10 @@ class TerrainBehavior extends TileBehavior
 		}
 		else {
 			if (PRNG.nextInt(16) == 0) {
-				city.setTile(xpos, ypos, DIRT);
+				if(PRNG.nextInt(48) == 0)
+					city.setTile(xpos, ypos, RADTILE);
+				else
+					city.setTile(xpos, ypos, DIRT);
 			}
 		}
 	}

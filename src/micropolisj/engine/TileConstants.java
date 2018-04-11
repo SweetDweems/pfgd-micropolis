@@ -56,7 +56,7 @@ public class TileConstants
 	static final char FLOOD = 48;
 	static final char LASTFLOOD = 51;
 	static final char RADTILE = 52;
-	static final char TOXIC = 956;
+	static final char TOXIC = 960;
 	static final char FIRE = 56;
 	static final char ROADBASE = 64;
 	static final char HBRIDGE = 64;
