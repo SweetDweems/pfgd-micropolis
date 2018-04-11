@@ -2374,7 +2374,7 @@ public class Micropolis
 				int c = map[yy][xx];
 				if (isFloodable(c) || getTile(xx, yy) == FIRE) {
 					setTile(xx, yy, TOXIC);
-					toxicCnt = 45;
+					toxicCnt = 30;
 					sendMessageAt(MicropolisMessage.NUCLEAR_SPILL_REPORT, xx, yy);
 					toxicX = xx;
 					toxicY = yy;

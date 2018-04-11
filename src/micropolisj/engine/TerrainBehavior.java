@@ -172,7 +172,7 @@ class TerrainBehavior extends TileBehavior
 		}
 		else {
 			if (PRNG.nextInt(16) == 0) {
-				if(PRNG.nextInt(48) == 0)
+				if(PRNG.nextInt(16) == 0)
 					city.setTile(xpos, ypos, RADTILE);
 				else
 					city.setTile(xpos, ypos, DIRT);
